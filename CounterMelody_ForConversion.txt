@@ -1,0 +1,52 @@
+CounterMelody_ForConversion.txt
+
+Format of this file?
+a, b, c
+where  
+      a = note name e.g. c4
+      b = duration of note e.g. 1   quarter note
+                                0.5 eigth note 
+                                0.3 triplet
+                                2   half note
+      c = slurred finish to note i.e. no cut-off
+      
+Format of finished file? 
+a, b
+where 
+      a = F_bus / (F_note * Wave_res)
+      b = F_note * Wave_res * Duration / F_tempo
+
+Begin Data 
+{
+rest, 1, 1
+a4, 0.5, 0
+b4, 0.5, 0
+g4, 1.5, 0
+b4, 0.5, 0
+a4, 2, 0
+rest, 1, 1
+a4, 0.333, 1
+b4, 0.333, 1
+g4, 0.333, 0
+a4, 0.5, 0
+b4, 0.5, 0
+c4, 1, 0
+b4, 1, 0
+a4, 1, 0
+rest, 1, 1
+a4, 0.5, 0
+b4, 0.5, 0
+g4, 1.5, 0
+b4, 0.5, 0
+a4, 2, 0
+a4, 0.5, 0
+b4, 0.5, 0
+g4, 0.5, 0
+a4, 0.5, 0
+b4, 0.5, 0
+g4, 0.5, 0
+c4, 1, 0
+b4, 1, 0
+a4, 1, 0
+} 
+End Data

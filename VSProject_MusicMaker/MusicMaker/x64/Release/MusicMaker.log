@@ -1,0 +1,16 @@
+﻿  stdafx.cpp
+  MusicMaker.cpp
+MusicMaker.cpp(61): error C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  C:\Program Files (x86)\Windows Kits\10\Include\10.0.10240.0\ucrt\string.h(119): note: see declaration of 'strcpy'
+MusicMaker.cpp(67): warning C4800: 'int': forcing value to bool 'true' or 'false' (performance warning)
+MusicMaker.cpp(62): error C4996: 'strtok': This function or variable may be unsafe. Consider using strtok_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  C:\Program Files (x86)\Windows Kits\10\Include\10.0.10240.0\ucrt\string.h(453): note: see declaration of 'strtok'
+MusicMaker.cpp(64): error C4996: 'strtok': This function or variable may be unsafe. Consider using strtok_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  C:\Program Files (x86)\Windows Kits\10\Include\10.0.10240.0\ucrt\string.h(453): note: see declaration of 'strtok'
+MusicMaker.cpp(66): error C4996: 'strtok': This function or variable may be unsafe. Consider using strtok_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  C:\Program Files (x86)\Windows Kits\10\Include\10.0.10240.0\ucrt\string.h(453): note: see declaration of 'strtok'
+MusicMaker.cpp(107): warning C4305: 'return': truncation from 'double' to 'float'
+MusicMaker.cpp(110): warning C4305: 'return': truncation from 'double' to 'float'
+MusicMaker.cpp(113): warning C4305: 'return': truncation from 'double' to 'float'
+MusicMaker.cpp(116): warning C4305: 'return': truncation from 'double' to 'float'
+MusicMaker.cpp(119): warning C4305: 'return': truncation from 'double' to 'float'
