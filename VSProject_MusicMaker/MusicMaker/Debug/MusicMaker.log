@@ -1,9 +1,14 @@
 ﻿  MusicMaker.cpp
-c:\keil\valvanowaretm4c123\445l_lab_5\vsproject_musicmaker\musicmaker\musicmaker.cpp(67): warning C4800: 'int': forcing value to bool 'true' or 'false' (performance warning)
-c:\keil\valvanowaretm4c123\445l_lab_5\vsproject_musicmaker\musicmaker\musicmaker.cpp(107): warning C4305: 'return': truncation from 'double' to 'float'
-c:\keil\valvanowaretm4c123\445l_lab_5\vsproject_musicmaker\musicmaker\musicmaker.cpp(110): warning C4305: 'return': truncation from 'double' to 'float'
-c:\keil\valvanowaretm4c123\445l_lab_5\vsproject_musicmaker\musicmaker\musicmaker.cpp(113): warning C4305: 'return': truncation from 'double' to 'float'
-c:\keil\valvanowaretm4c123\445l_lab_5\vsproject_musicmaker\musicmaker\musicmaker.cpp(116): warning C4305: 'return': truncation from 'double' to 'float'
-c:\keil\valvanowaretm4c123\445l_lab_5\vsproject_musicmaker\musicmaker\musicmaker.cpp(119): warning C4305: 'return': truncation from 'double' to 'float'
+c:\keil\valvanowaretm4c123\445l_lab_5\vsproject_musicmaker\musicmaker\musicmaker.cpp(103): warning C4800: 'int': forcing value to bool 'true' or 'false' (performance warning)
+c:\keil\valvanowaretm4c123\445l_lab_5\vsproject_musicmaker\musicmaker\musicmaker.cpp(131): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+c:\keil\valvanowaretm4c123\445l_lab_5\vsproject_musicmaker\musicmaker\musicmaker.cpp(137): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+c:\keil\valvanowaretm4c123\445l_lab_5\vsproject_musicmaker\musicmaker\musicmaker.cpp(144): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
+c:\keil\valvanowaretm4c123\445l_lab_5\vsproject_musicmaker\musicmaker\musicmaker.cpp(197): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+c:\keil\valvanowaretm4c123\445l_lab_5\vsproject_musicmaker\musicmaker\musicmaker.cpp(221): warning C4305: 'return': truncation from 'double' to 'float'
+c:\keil\valvanowaretm4c123\445l_lab_5\vsproject_musicmaker\musicmaker\musicmaker.cpp(224): warning C4305: 'return': truncation from 'double' to 'float'
+c:\keil\valvanowaretm4c123\445l_lab_5\vsproject_musicmaker\musicmaker\musicmaker.cpp(227): warning C4305: 'return': truncation from 'double' to 'float'
+c:\keil\valvanowaretm4c123\445l_lab_5\vsproject_musicmaker\musicmaker\musicmaker.cpp(230): warning C4305: 'return': truncation from 'double' to 'float'
+c:\keil\valvanowaretm4c123\445l_lab_5\vsproject_musicmaker\musicmaker\musicmaker.cpp(233): warning C4305: 'return': truncation from 'double' to 'float'
+c:\keil\valvanowaretm4c123\445l_lab_5\vsproject_musicmaker\musicmaker\musicmaker.cpp(239): warning C4305: 'return': truncation from 'double' to 'float'
   MusicMaker.vcxproj -> C:\Keil\ValvanoWareTM4C123\445L_LAB_5\VSProject_MusicMaker\MusicMaker\Debug\MusicMaker.exe
   MusicMaker.vcxproj -> C:\Keil\ValvanoWareTM4C123\445L_LAB_5\VSProject_MusicMaker\MusicMaker\Debug\MusicMaker.pdb (Full PDB)

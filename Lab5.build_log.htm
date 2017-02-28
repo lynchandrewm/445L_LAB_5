@@ -4,15 +4,125 @@
 <h1>µVision Build Log</h1>
 <h2>Project:</h2>
 C:\Keil\ValvanoWareTM4C123\445L_LAB_5\Lab5.uvproj
-Project File Date:  02/21/2017
+Project File Date:  02/27/2017
 
 <h2>Output:</h2>
-Build target 'Lab5'
+Rebuild target 'Lab5'
+assembling startup.s...
 compiling main.c...
-main.c(45): error:  #20: identifier "wave" is undefined
-      DAC_Out(wave[i&0x1F]);
-main.c: 0 warnings, 1 error
-compiling Music.c...
-".\Lab5.axf" - 1 Error(s), 0 Warning(s).
+Switch.h(44): warning:  #1295-D: Deprecated declaration Switch_Init - give arg types
+  void Switch_Init();
+Switch.h(50): warning:  #1-D: last line of file ends without a newline
+  #endif
+main.c: 2 warnings, 0 errors
+compiling DAC.c...
+compiling PLL.c...
+compiling NewMusic.c...
+NewMusic.h(205): warning:  #1-D: last line of file ends without a newline
+  #endif //__MUSIC__
+NewMusic.c: 1 warning, 0 errors
+compiling Player.c...
+NewMusic.h(205): warning:  #1-D: last line of file ends without a newline
+  #endif //__MUSIC__
+Player.c: 1 warning, 0 errors
+compiling Debug.c...
+compiling Switch.c...
+Switch.h(44): warning:  #1295-D: Deprecated declaration Switch_Init - give arg types
+  void Switch_Init();
+Switch.h(50): warning:  #1-D: last line of file ends without a newline
+  #endif
+Switch.c(236): warning:  #1-D: last line of file ends without a newline
+    
+Switch.c: 3 warnings, 0 errors
+compiling SysTick.c...
+linking...
+Program Size: Code=9136 RO-data=4240 RW-data=1424 ZI-data=10336  
+".\Lab5.axf" - 0 Error(s), 7 Warning(s).
+Load "C:\\Keil\\ValvanoWareTM4C123\\445L_LAB_5\\Lab5.axf" 
+Connecting: Mode=JTAG, Speed=1000000Hz
+Erase Done.
+Programming Done.
+Verify OK.
+Load "C:\\Keil\\ValvanoWareTM4C123\\445L_LAB_5\\Lab5.axf" 
+Connecting: Mode=JTAG, Speed=1000000Hz
+Erase Done.
+Programming Done.
+Verify OK.
+ Code=8988 RO-data=4240 RW-data=1424 ZI-data=10336  
+".\Lab5.axf" - 0 Error(s), 10 Warning(s).
+warnings, 0 errors
+compiling SysTick.c...
+SysTick.h(51): warning:  #1-D: last line of file ends without a newline
+  #endif
+SysTick.c: 1 warning, 0 errors
+linking...
+Program Size: Code=8988 RO-data=4240 RW-data=1424 ZI-data=10336  
+".\Lab5.axf" - 0 Error(s), 13 Warning(s).
+Load "C:\\Keil\\ValvanoWareTM4C123\\445L_LAB_5\\Lab5.axf" 
+Connecting: Mode=JTAG, Speed=1000000Hz
+Erase Done.
+Programming Done.
+Verify OK.
+Load "C:\\Keil\\ValvanoWareTM4C123\\445L_LAB_5\\Lab5.axf" 
+Connecting: Mode=JTAG, Speed=1000000Hz
+Erase Done.
+Programming Done.
+Verify OK.
+Load "C:\\Keil\\ValvanoWareTM4C123\\445L_LAB_5\\Lab5.axf" 
+Connecting: Mode=JTAG, Speed=1000000Hz
+Erase Done.
+Programming Done.
+Verify OK.
+Speed=1000000Hz
+Erase Done.
+Programming Done.
+Verify OK.
+anoWareTM4C123\\445L_LAB_5\\Lab5.axf" 
+Connecting: Mode=JTAG, Speed=1000000Hz
+Erase Done.
+Programming Done.
+Verify OK.
+witch.c: 4 warnings, 10 errors
+".\Lab5.axf" - 10 Error(s), 10 Warning(s).
 Target not created
- 
+"volatile uint32_t *" is incompatible with parameter of type "uint32_t"
+    GPIOIntEnable(GPIO_PORTB_DATA_BITS_R,GPIO_PIN_3);
+Switch.c(63): error:  #167: argument of type "volatile uint32_t *" is incompatible with parameter of type "uint32_t"
+    GPIOIntEnable(GPIO_PORTC_DATA_BITS_R,GPIO_PIN_6);
+Switch.c(64): error:  #167: argument of type "volatile uint32_t *" is incompatible with parameter of type "uint32_t"
+    GPIOIntEnable(GPIO_PORTF_DATA_BITS_R,GPIO_PIN_4);
+Switch.c(65): error:  #167: argument of type "volatile uint32_t *" is incompatible with parameter of type "uint32_t"
+    PreviousPB3 = GPIOPinRead(GPIO_PORTB_DATA_BITS_R,GPIO_PIN_3);
+Switch.c(66): error:  #167: argument of type "volatile uint32_t *" is incompatible with parameter of type "uint32_t"
+    PreviousPC6 = GPIOPinRead(GPIO_PORTC_DATA_BITS_R,GPIO_PIN_6);
+Switch.c(67): error:  #167: argument of type "volatile uint32_t *" is incompatible with parameter of type "uint32_t"
+    PreviousPF4 = GPIOPinRead(GPIO_PORTF_DATA_BITS_R,GPIO_PIN_4);
+Switch.c(80): error:  #167: argument of type "volatile uint32_t *" is incompatible with parameter of type "uint32_t"
+    GPIOPinTypeGPIOInput(GPIO_PORTB_DATA_BITS_R,GPIO_PIN_3);
+Switch.c(81): error:  #167: argument of type "volatile uint32_t *" is incompatible with parameter of type "uint32_t"
+    GPIOPinTypeGPIOInput(GPIO_PORTC_DATA_BITS_R,GPIO_PIN_6);
+Switch.c(82): error:  #167: argument of type "volatile uint32_t *" is incompatible with parameter of type "uint32_t"
+    GPIOPinTypeGPIOInput(GPIO_PORTF_DATA_BITS_R,GPIO_PIN_4);
+Switch.c(83): error:  #167: argument of type "volatile uint32_t *" is incompatible with parameter of type "uint32_t"
+    GPIOPadConfigSet(GPIO_PORTB_DATA_BITS_R, GPIO_PIN_3, GPIO_STRENGTH_2MA, GPIO_PIN_TYPE_STD_WPU);  
+Switch.c(84): error:  #167: argument of type "volatile uint32_t *" is incompatible with parameter of type "uint32_t"
+    GPIOPadConfigSet(GPIO_PORTC_DATA_BITS_R, GPIO_PIN_6, GPIO_STRENGTH_2MA, GPIO_PIN_TYPE_STD_WPU);  
+Switch.c(85): error:  #167: argument of type "volatile uint32_t *" is incompatible with parameter of type "uint32_t"
+    GPIOPadConfigSet(GPIO_PORTF_DATA_BITS_R, GPIO_PIN_4, GPIO_STRENGTH_2MA, GPIO_PIN_TYPE_STD_WPU);  
+Switch.c(86): error:  #167: argument of type "volatile uint32_t *" is incompatible with parameter of type "uint32_t"
+    GPIOIntRegister(GPIO_PORTB_DATA_BITS_R,PortB_handler);
+Switch.c(87): error:  #167: argument of type "volatile uint32_t *" is incompatible with parameter of type "uint32_t"
+    GPIOIntRegister(GPIO_PORTC_DATA_BITS_R,PortC_handler);
+Switch.c(88): error:  #167: argument of type "volatile uint32_t *" is incompatible with parameter of type "uint32_t"
+    GPIOIntRegister(GPIO_PORTF_DATA_BITS_R,PortF_handler);
+Switch.c(89): error:  #167: argument of type "volatile uint32_t *" is incompatible with parameter of type "uint32_t"
+    GPIOIntTypeSet(GPIO_PORTB_DATA_BITS_R,GPIO_PIN_3,GPIO_BOTH_EDGES);
+Switch.c(90): error:  #167: argument of type "volatile uint32_t *" is incompatible with parameter of type "uint32_t"
+    GPIOIntTypeSet(GPIO_PORTC_DATA_BITS_R,GPIO_PIN_6,GPIO_BOTH_EDGES);
+Switch.c: 1 warning, 30 errors
+compiling SysTick.c...
+SysTick.h(51): warning:  #1-D: last line of file ends without a newline
+  #endif
+SysTick.c: 1 warning, 0 errors
+".\Lab5.axf" - 30 Error(s), 5 Warning(s).
+Target not created

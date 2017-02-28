@@ -1,0 +1,93 @@
+/****************************************
+     Begin Music Note Definitions
+****************************************/
+#define g4  3188
+#define d4  4256
+#define e4  3792
+#define f4  3579
+#define a4  2840
+#define b4  2530
+#define c4  4777
+
+/****************************************
+     Begin Music Rest Definitions
+****************************************/
+#define rest0  544866304
+#define rest1  544866304
+#define rest2  544866304
+#define rest3  544866304
+#define rest4  544866304
+#define rest5  544866304
+#define rest6  544866304
+#define rest7  544866304
+#define rest8  544866304
+#define rest9  544866304
+#define rest10  544866304
+#define rest11  544866304
+#define rest12  544866304
+#define rest13  544866304
+#define rest14  544866304
+#define rest15  272433152
+#define rest16  272433152
+#define rest17  544866304
+#define rest18  544866304
+#define rest19  544866304
+#define rest20  544866304
+#define rest21  544866304
+
+const music melody[] = {
+  { g4, 12544 },
+  { rest0, 1 },
+  { d4, 9397 },
+  { rest1, 1 },
+  { e4, 10548 },
+  { rest2, 1 },
+  { f4, 11175 },
+  { rest3, 1 },
+  { e4, 10548 },
+  { rest4, 1 },
+  { d4, 9397 },
+  { rest5, 1 },
+  { g4, 12544 },
+  { rest6, 1 },
+  { d4, 9397 },
+  { rest7, 1 },
+  { e4, 10548 },
+  { rest8, 1 },
+  { a4, 14080 },
+  { rest9, 1 },
+  { b4, 15804 },
+  { rest10, 1 },
+  { c4, 8372 },
+  { rest11, 1 },
+  { g4, 12544 },
+  { rest12, 1 },
+  { d4, 9397 },
+  { rest13, 1 },
+  { e4, 10548 },
+  { rest14, 1 },
+  { f4, 5587 },
+  { rest15, 1 },
+  { g4, 6272 },
+  { rest16, 1 },
+  { a4, 14080 },
+  { rest17, 1 },
+  { g4, 3763 },
+  { a4, 4224 },
+  { g4, 3763 },
+  { f4, 11175 },
+  { rest18, 1 },
+  { e4, 3164 },
+  { f4, 3352 },
+  { e4, 3164 },
+  { d4, 9397 },
+  { rest19, 1 },
+  { a4, 4224 },
+  { g4, 3763 },
+  { a4, 4224 },
+  { b4, 15804 },
+  { rest20, 1 },
+  { c4, 8372 },
+  { rest21, 1 },
+};
+

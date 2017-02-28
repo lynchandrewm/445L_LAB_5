@@ -1,0 +1,38 @@
+Stoccato1_ForConversion.txt
+
+Format of this file?
+a, b, c
+where  
+      a = note name e.g. c4
+      b = duration of note e.g. 1   quarter note
+                                0.5 eigth note 
+                                0.3 triplet
+                                2   half note
+      c = slurred finish to note i.e. no cut-off
+      
+Format of finished file? 
+a, b
+where 
+      a = F_bus / (F_note * Wave_res)
+      b = F_note * Wave_res * Duration / F_tempo
+
+Begin Data 
+{
+g4,  1,  0
+rest,  2,  1 
+f4,  1,  0 
+rest,  2,  1 
+g4,  1,  0
+rest,  2,  1 
+f4,  1,  0 
+rest,  2,  1 
+g4,  1,  0
+rest,  2,  1 
+f4,  1,  0 
+rest,  2,  1 
+g4,  1,  0
+rest,  2,  1 
+f4,  1,  0 
+rest,  2,  1 
+} 
+End Data

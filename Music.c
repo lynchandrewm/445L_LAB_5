@@ -5,54 +5,352 @@
 #include "..//inc//tm4c123gh6pm.h"
 #include "Music.h"
 
-void DisableInterrupts(void); // Disable interrupts
-void EnableInterrupts(void);  // Enable interrupts
-long StartCritical (void);    // previous I bit, disable interrupts
-void EndCritical(long sr);    // restore I bit to previous value
-void WaitForInterrupt(void);  // low power mode
+#define NORMAL_NOTE_LENGTH 9 // 0.9
+#define STACCATO_NOTE_LENGTH 5 // 0.5
 
-void static SetTimer0A(uint32_t period);
-void static SetTimer0B(uint32_t period);
-void static SetTimer1A(uint32_t period);
-void static SetTimer1B(uint32_t period);
-void static SetTimer2A(uint32_t period);
-void static SetTimer2B(uint32_t period);
+int static freqFinder(int src);
+int static durationFinder(int src);
+void static MakeMusic(const struct RawMusic src, struct Music* dst, int* index_ptr);
 
-#define MAX_INSTRUMENT_INDEX 63
-#define MAX_ALLEGRO_INDEX 93
-#define MAX_STOCCATO1_INDEX 24
-#define MAX_STOCCATO2_INDEX 24
-#define MAX_STOCCATO3_INDEX 24
-#define MAX_MELODY_INDEX 53
-#define MAX_COUNTERMELODY_INDEX 55
+uint32_t static clk_speed;
+uint32_t static const ftempo = DESIRED_TEMPO / 60;
 
-typedef struct MusicStruct {
-  uint32_t cyclesPerStep;
-  uint32_t numberOfSteps;
-} music;
+void Part_Init(const struct RawMusic part[], int len, struct Music dst[]){  \
+  int freq, num, part_index, music_index;      \
+  while(part_index<len){       \
+    if(music_index > MAX_MUSIC_LENGTH){  \
+      break;   \
+    }          \
+    MakeMusic(part[part_index], dst, &music_index); \
+    part_index++; music_index++;          \
+  }                                       \
+}                                         \
 
-uint32_t Timer0A_Count;
-uint32_t Timer0B_Count;
-uint32_t Timer1A_Count;
-uint32_t Timer1B_Count;
-uint32_t Timer2A_Count;
-uint32_t Timer2B_Count;
-uint32_t Allegro_InstrumentIndex;
-uint32_t Stoccato1_InstrumentIndex;
-uint32_t Stoccato2_InstrumentIndex;
-uint32_t Stoccato3_InstrumentIndex;
-uint32_t Melody_InstrumentIndex;
-uint32_t CounterMelody_InstrumentIndex;
+void static MakeMusic(const struct RawMusic src, struct Music* dst, int* index_ptr){
+  int value = src.value;
+  int enum_duration = src.duration;
+  int property = src.property;
+  int fnote = freqFinder(value);
+  int duration = durationFinder(enum_duration);
+  int actualDuration;
+  if(value == Rest){
+    dst[*index_ptr].cyclesPerStep = duration * clk_speed / ftempo;
+    dst[*index_ptr].numberOfSteps = 1;
+    return;
+  }
+  else{
+    fnote = freqFinder(value);
+    dst[*index_ptr].cyclesPerStep = clk_speed / (64 * fnote);
+  }
+  switch(property){
+    case None:
+      actualDuration = (duration * NORMAL_NOTE_LENGTH)/10;
+      dst[*index_ptr].numberOfSteps = fnote * actualDuration * 64 / ftempo;
+      (*index_ptr)++;
+      dst[*index_ptr].cyclesPerStep = (duration-actualDuration) * clk_speed / ftempo;
+      dst[*index_ptr].numberOfSteps = 1;
+      break;
+    case Staccato:
+      actualDuration = (duration * STACCATO_NOTE_LENGTH)/10;
+      dst[*index_ptr].numberOfSteps = fnote * actualDuration * 64 / ftempo;
+      (*index_ptr)++;
+      dst[*index_ptr].cyclesPerStep = (duration-actualDuration) * clk_speed / ftempo;
+      dst[*index_ptr].numberOfSteps = 1;
+      break;
+    case Slurred:
+      actualDuration = duration;
+      dst[*index_ptr].numberOfSteps = fnote * actualDuration * 64 / ftempo;
+      break;
+  }
+}
 
-uint8_t AllegroIndex;
-uint8_t Stoccato1Index;
-uint8_t Stoccato2Index;
-uint8_t Stoccato3Index;
-uint8_t MelodyIndex;
-uint8_t CounterMelodyIndex;
+int static freqFinder(int src){
+  switch(src){
+    case Rest:
+      return 0;
+    case C_0:
+      return 0;
+    case CSharp_0:
+    case DFlat_0:
+      return 0;
+    case D_0:
+      return 0;
+    case DSharp_0:
+    case EFlat_0:
+      return 0;
+    case E_0:
+      return 0;
+    case F_0:
+      return 0;
+    case FSharp_0:
+    case GFlat_0:
+      return 0;
+    case G_0:
+      return 0;
+    case GSharp_0:
+    case AFlat_0:
+      return 0;
+    case A_0:
+      return 0;
+    case ASharp_0:
+    case BFlat_0:
+      return 0;
+    case B_0:
+      return 0;
+    case C_1:
+      return 0;
+    case CSharp_1:
+    case DFlat_1:
+      return 0;
+    case D_1:
+      return 0;
+    case DSharp_1:
+    case EFlat_1:
+      return 0;
+    case E_1:
+      return 0;
+    case F_1:
+      return 0;
+    case FSharp_1:
+    case GFlat_1:
+      return 0;
+    case G_1:
+      return 0;
+    case GSharp_1:
+    case AFlat_1:
+      return 0;
+    case A_1:
+      return 0;
+    case ASharp_1:
+    case BFlat_1:
+      return 0;
+    case B_1:
+      return 0;
+    case C_2:
+      return 0;
+    case CSharp_2:
+    case DFlat_2:
+      return 0;
+    case D_2:
+      return 0;
+    case DSharp_2:
+    case EFlat_2:
+      return 0;
+    case E_2:
+      return 0;
+    case F_2:
+      return 0;
+    case FSharp_2:
+    case GFlat_2:
+      return 0;
+    case G_2:
+      return 0;
+    case GSharp_2:
+    case AFlat_2:
+      return 0;
+    case A_2:
+      return 0;
+    case ASharp_2:
+    case BFlat_2:
+      return 0;
+    case B_2:
+      return 0;
+    case C_3:
+      return 131;
+    case CSharp_3:
+    case DFlat_3:
+      return 139;
+    case D_3:
+      return 147;
+    case DSharp_3:
+    case EFlat_3:
+      return 156;
+    case E_3:
+      return 166;
+    case F_3:
+      return 175;
+    case FSharp_3:
+    case GFlat_3:
+      return 185;
+    case G_3:
+      return 196;
+    case GSharp_3:
+    case AFlat_3:
+      return 208;
+    case A_3:
+      return 220;
+    case ASharp_3:
+    case BFlat_3:
+      return 233;
+    case B_3:
+      return 247;
+    case C_4:
+      return 262;
+    case CSharp_4:
+    case DFlat_4:
+      return 277;
+    case D_4:
+      return 294;
+    case DSharp_4:
+    case EFlat_4:
+      return 311;
+    case E_4:
+      return 330;
+    case F_4:
+      return 349;
+    case FSharp_4:
+    case GFlat_4:
+      return 370;
+    case G_4:
+      return 392;
+    case GSharp_4:
+    case AFlat_4:
+      return 415;
+    case A_4:
+      return 440;
+    case ASharp_4:
+    case BFlat_4:
+      return 466;
+    case B_4:
+      return 494;
+    case C_5:
+      return 523;
+    case CSharp_5:
+    case DFlat_5:
+      return 554;
+    case D_5:
+      return 587;
+    case DSharp_5:
+    case EFlat_5:
+      return 622;
+    case E_5:
+      return 659;
+    case F_5:
+      return 698;
+    case FSharp_5:
+    case GFlat_5:
+      return 740;
+    case G_5:
+      return 784;
+    case GSharp_5:
+    case AFlat_5:
+      return 831;
+    case A_5:
+      return 880;
+    case ASharp_5:
+    case BFlat_5:
+      return 932;
+    case B_5:
+      return 988;
+    case C_6:
+      return 0;
+    case CSharp_6:
+    case DFlat_6:
+      return 0;
+    case D_6:
+      return 0;
+    case DSharp_6:
+    case EFlat_6:
+      return 0;
+    case E_6:
+      return 0;
+    case F_6:
+      return 0;
+    case FSharp_6:
+    case GFlat_6:
+      return 0;
+    case G_6:
+      return 0;
+    case GSharp_6:
+    case AFlat_6:
+      return 0;
+    case A_6:
+      return 0;
+    case ASharp_6:
+    case BFlat_6:
+      return 0;
+    case B_6:
+      return 0;
+    case C_7:
+      return 0;
+    case CSharp_7:
+    case DFlat_7:
+      return 0;
+    case D_7:
+      return 0;
+    case DSharp_7:
+    case EFlat_7:
+      return 0;
+    case E_7:
+      return 0;
+    case F_7:
+      return 0;
+    case FSharp_7:
+    case GFlat_7:
+      return 0;
+    case G_7:
+      return 0;
+    case GSharp_7:
+    case AFlat_7:
+      return 0;
+    case A_7:
+      return 0;
+    case ASharp_7:
+    case BFlat_7:
+      return 0;
+    case B_7:
+      return 0;
+    case C_8:
+      return 0;
+    case CSharp_8:
+    case DFlat_8:
+      return 0;
+    case D_8:
+      return 0;
+    case DSharp_8:
+    case EFlat_8:
+      return 0;
+    case E_8:
+      return 0;
+    case F_8:
+      return 0;
+    case FSharp_8:
+    case GFlat_8:
+      return 0;
+    case G_8:
+      return 0;
+    case GSharp_8:
+    case AFlat_8:
+      return 0;
+    case A_8:
+      return 0;
+    case ASharp_8:
+    case BFlat_8:
+      return 0;
+    case B_8:
+      return 0;
+  }
+  return -1;
+}
+
+int static durationFinder(int src){
+  switch(src){
+    case Quarter:
+      return 100;
+    case Half:
+      return 200;
+    case Whole:  
+      return 400;
+    case Eigth:
+      return 50;
+    case Triplet:
+      return 33;
+  }
+  return -1;
+}
 
 const uint16_t flute[64] = {
-  1007 * 2 * 2, 1252 * 2 * 2, 1374 * 2, 1548 * 2, 1698 * 2, 1797 * 2, 1825 * 2, 1797 * 2, 1675 * 2, 1562 * 2, 1383 * 2, 1219 * 2, 1092 * 2, 
+  1007 * 2, 1252 * 2, 1374 * 2, 1548 * 2, 1698 * 2, 1797 * 2, 1825 * 2, 1797 * 2, 1675 * 2, 1562 * 2, 1383 * 2, 1219 * 2, 1092 * 2, 
   1007 * 2, 913 * 2, 890 * 2, 833 * 2, 847 * 2, 810 * 2, 777 * 2, 744 * 2, 674 * 2, 598 * 2, 551 * 2, 509 * 2, 476 * 2, 495 * 2, 533 * 2, 589 * 2, 
   659 * 2, 758 * 2, 876 * 2, 1007 * 2, 1252 * 2, 1374 * 2, 1548 * 2, 1698 * 2, 1797 * 2, 1825 * 2, 1797 * 2, 1675 * 2, 1562 * 2, 1383 * 2, 
   1219 * 2, 1092 * 2, 1007 * 2, 913 * 2, 890 * 2, 833 * 2, 847 * 2, 810 * 2, 777 * 2, 744 * 2, 674 * 2, 598 * 2, 551 * 2, 509 * 2, 476 * 2, 495 * 2, 
@@ -90,505 +388,5 @@ const uint16_t oboe[64] = {
   958 * 2, 929 * 2, 905 * 2, 892 * 2, 900 * 2, 940 * 2, 1022 * 2, 1125 * 2, 1157 * 2, 1087 * 2, 965 * 2, 836 * 2, 783 * 2, 816 * 2, 895 * 2, 971 * 2, 1017 * 2
 };
 
-const music Allegro[MAX_ALLEGRO_INDEX] = {
-  { 40000000, 1 },
-  { 4256, 4698 },
-  { 18000000, 1 },
-  { 3188, 6272 },
-  { 18000000, 1 },
-  { 4777, 4186 },
-  { 18000000, 1 },
-  { 3792, 5274 },
-  { 18000000, 1 },
-  { 2840, 7040 },
-  { 18000000, 1 },
-  { 2128, 9397 },
-  { 18000000, 1 },
-  { 4256, 4698 },
-  { 18000000, 1 },
-  { 3188, 6272 },
-  { 18000000, 1 },
-  { 4777, 4186 },
-  { 18000000, 1 },
-  { 3792, 5274 },
-  { 18000000, 1 },
-  { 2840, 7040 },
-  { 18000000, 1 },
-  { 2128, 9397 },
-  { 18000000, 1 },
-  { 4256, 4698 },
-  { 18000000, 1 },
-  { 3188, 6272 },
-  { 18000000, 1 },
-  { 4777, 4186 },
-  { 18000000, 1 },
-  { 3792, 5274 },
-  { 18000000, 1 },
-  { 2840, 7040 },
-  { 18000000, 1 },
-  { 2128, 9397 },
-  { 18000000, 1 },
-  { 4256, 4698 },
-  { 18000000, 1 },
-  { 3188, 6272 },
-  { 18000000, 1 },
-  { 4777, 4186 },
-  { 18000000, 1 },
-  { 3792, 5274 },
-  { 18000000, 1 },
-  { 2840, 7040 },
-  { 18000000, 1 },
-  { 2128, 9397 },
-  { 18000000, 1 },
-  { 4256, 4698 },
-  { 18000000, 1 },
-  { 3188, 6272 },
-  { 18000000, 1 },
-  { 4777, 4186 },
-  { 18000000, 1 },
-  { 3792, 5274 },
-  { 18000000, 1 },
-  { 2840, 7040 },
-  { 18000000, 1 },
-  { 2128, 9397 },
-  { 18000000, 1 },
-  { 4256, 4698 },
-  { 18000000, 1 },
-  { 3188, 6272 },
-  { 18000000, 1 },
-  { 4777, 4186 },
-  { 18000000, 1 },
-  { 3792, 5274 },
-  { 18000000, 1 },
-  { 2840, 7040 },
-  { 18000000, 1 },
-  { 2128, 9397 },
-  { 18000000, 1 },
-  { 4256, 4698 },
-  { 18000000, 1 },
-  { 3188, 6272 },
-  { 18000000, 1 },
-  { 4777, 4186 },
-  { 18000000, 1 },
-  { 3792, 5274 },
-  { 18000000, 1 },
-  { 2840, 7040 },
-  { 18000000, 1 },
-  { 2128, 9397 },
-  { 18000000, 1 },
-  { 4256, 4698 },
-  { 18000000, 1 },
-  { 3188, 6272 },
-  { 18000000, 1 },
-  { 4777, 4186 },
-  { 18000000, 1 },
-  { 3792, 5274 },
-  { 18000000, 1 },
-};
-
-const music Stoccato3[MAX_STOCCATO3_INDEX] = {
-  { 4256, 9397 },
-  { 36000000, 1 },
-  { 80000000, 1 },
-  { 4777, 8372 },
-  { 36000000, 1 },
-  { 80000000, 1 },
-  { 4256, 9397 },
-  { 36000000, 1 },
-  { 80000000, 1 },
-  { 4777, 8372 },
-  { 36000000, 1 },
-  { 80000000, 1 },
-  { 4256, 9397 },
-  { 36000000, 1 },
-  { 80000000, 1 },
-  { 4777, 8372 },
-  { 36000000, 1 },
-  { 80000000, 1 },
-  { 4256, 9397 },
-  { 36000000, 1 },
-  { 80000000, 1 },
-  { 4777, 8372 },
-  { 36000000, 1 },
-  { 80000000, 1 },
-};
-
-const music Stoccato2[MAX_STOCCATO2_INDEX] = {
-  { 2530, 15804 },
-  { 36000000, 1 },
-  { 80000000, 1 },
-  { 2840, 14080 },
-  { 36000000, 1 },
-  { 80000000, 1 },
-  { 2530, 15804 },
-  { 36000000, 1 },
-  { 80000000, 1 },
-  { 2840, 14080 },
-  { 36000000, 1 },
-  { 80000000, 1 },
-  { 2530, 15804 },
-  { 36000000, 1 },
-  { 80000000, 1 },
-  { 2840, 14080 },
-  { 36000000, 1 },
-  { 80000000, 1 },
-  { 2530, 15804 },
-  { 36000000, 1 },
-  { 80000000, 1 },
-  { 2840, 14080 },
-  { 36000000, 1 },
-  { 80000000, 1 },
-};
-
-const music Stoccato1[MAX_STOCCATO1_INDEX] = {
-  { 3188, 12544 },
-  { 36000000, 1 },
-  { 80000000, 1 },
-  { 3579, 11175 },
-  { 36000000, 1 },
-  { 80000000, 1 },
-  { 3188, 12544 },
-  { 36000000, 1 },
-  { 80000000, 1 },
-  { 3579, 11175 },
-  { 36000000, 1 },
-  { 80000000, 1 },
-  { 3188, 12544 },
-  { 36000000, 1 },
-  { 80000000, 1 },
-  { 3579, 11175 },
-  { 36000000, 1 },
-  { 80000000, 1 },
-  { 3188, 12544 },
-  { 36000000, 1 },
-  { 80000000, 1 },
-  { 3579, 11175 },
-  { 36000000, 1 },
-  { 80000000, 1 },
-};
-
-const music Melody[MAX_MELODY_INDEX] = {
-  { 3188, 12544 },
-  { 36000000, 1 },
-  { 4256, 9397 },
-  { 36000000, 1 },
-  { 3792, 10548 },
-  { 36000000, 1 },
-  { 3579, 11175 },
-  { 36000000, 1 },
-  { 3792, 10548 },
-  { 36000000, 1 },
-  { 4256, 9397 },
-  { 36000000, 1 },
-  { 3188, 12544 },
-  { 36000000, 1 },
-  { 4256, 9397 },
-  { 36000000, 1 },
-  { 3792, 10548 },
-  { 36000000, 1 },
-  { 2840, 14080 },
-  { 36000000, 1 },
-  { 2530, 15804 },
-  { 36000000, 1 },
-  { 4777, 8372 },
-  { 36000000, 1 },
-  { 3188, 12544 },
-  { 36000000, 1 },
-  { 4256, 9397 },
-  { 36000000, 1 },
-  { 3792, 10548 },
-  { 36000000, 1 },
-  { 3579, 5587 },
-  { 18000000, 1 },
-  { 3188, 6272 },
-  { 18000000, 1 },
-  { 2840, 14080 },
-  { 36000000, 1 },
-  { 3188, 3763 },
-  { 2840, 4224 },
-  { 3188, 3763 },
-  { 3579, 11175 },
-  { 36000000, 1 },
-  { 3792, 3164 },
-  { 3579, 3352 },
-  { 3792, 3164 },
-  { 4256, 9397 },
-  { 36000000, 1 },
-  { 2840, 4224 },
-  { 3188, 3763 },
-  { 2840, 4224 },
-  { 2530, 15804 },
-  { 36000000, 1 },
-  { 4777, 8372 },
-  { 36000000, 1 },
-};
-
-const music CounterMelody[MAX_COUNTERMELODY_INDEX] = {
-  { 40000000, 1 },
-  { 2840, 7040 },
-  { 18000000, 1 },
-  { 2530, 7902 },
-  { 18000000, 1 },
-  { 3188, 18816 },
-  { 54000000, 1 },
-  { 2530, 7902 },
-  { 18000000, 1 },
-  { 2840, 28160 },
-  { 72000000, 1 },
-  { 40000000, 1 },
-  { 2840, 4688 },
-  { 2530, 5262 },
-  { 3188, 4177 },
-  { 11988000, 1 },
-  { 2840, 7040 },
-  { 18000000, 1 },
-  { 2530, 7902 },
-  { 18000000, 1 },
-  { 4777, 8372 },
-  { 36000000, 1 },
-  { 2530, 15804 },
-  { 36000000, 1 },
-  { 2840, 14080 },
-  { 36000000, 1 },
-  { 40000000, 1 },
-  { 2840, 7040 },
-  { 18000000, 1 },
-  { 2530, 7902 },
-  { 18000000, 1 },
-  { 3188, 18816 },
-  { 54000000, 1 },
-  { 2530, 7902 },
-  { 18000000, 1 },
-  { 2840, 28160 },
-  { 72000000, 1 },
-  { 2840, 7040 },
-  { 18000000, 1 },
-  { 2530, 7902 },
-  { 18000000, 1 },
-  { 3188, 6272 },
-  { 18000000, 1 },
-  { 2840, 7040 },
-  { 18000000, 1 },
-  { 2530, 7902 },
-  { 18000000, 1 },
-  { 3188, 6272 },
-  { 18000000, 1 },
-  { 4777, 8372 },
-  { 36000000, 1 },
-  { 2530, 15804 },
-  { 36000000, 1 },
-  { 2840, 14080 },
-  { 36000000, 1 }
-};
 
 
-void Timer0A_Handler(void){
-  TIMER0_ICR_R = TIMER_ICR_TATOCINT;// acknowledge Timer0A_Handler timeout
-  if(Allegro[AllegroIndex].numberOfSteps > Timer0A_Count){ // not ready for next note, but increment step
-    Allegro_InstrumentIndex++;
-    if(Allegro_InstrumentIndex > MAX_INSTRUMENT_INDEX){
-      Allegro_InstrumentIndex = 0;
-    }
-  }
-  else { // ready for next note
-    AllegroIndex++;
-    if(AllegroIndex > MAX_ALLEGRO_INDEX){
-      AllegroIndex = 0;
-    }
-    SetTimer0A(Allegro[AllegroIndex].cyclesPerStep);
-  }
-  Timer0A_Count++;
-}
-
-void Timer0B_Handler(void){
-  TIMER0_ICR_R = TIMER_ICR_TBTOCINT;// acknowledge Timer0B_Handler timeout
-  if(Stoccato3[Stoccato3Index].numberOfSteps > Timer0B_Count){ // not ready for next note, but increment step
-    Stoccato3_InstrumentIndex++;
-    if(Stoccato3_InstrumentIndex > MAX_INSTRUMENT_INDEX){
-      Stoccato3_InstrumentIndex = 0;
-    }
-  }
-  else { // ready for next note
-    Stoccato3Index++;
-    if(Stoccato3Index > MAX_STOCCATO3_INDEX){
-      Stoccato3Index = 0;
-    }
-    SetTimer0B(Stoccato3[Stoccato3Index].cyclesPerStep);
-  }
-  Timer0B_Count++;
-}
-
-void Timer1A_Handler(void){
-  TIMER1_ICR_R = TIMER_ICR_TATOCINT;// acknowledge Timer1A_Handler timeout
-  if(Stoccato2[Stoccato2Index].numberOfSteps > Timer1A_Count){ // not ready for next note, but increment step
-    Stoccato2_InstrumentIndex++;
-    if(Stoccato2_InstrumentIndex > MAX_INSTRUMENT_INDEX){
-      Stoccato2_InstrumentIndex = 0;
-    }
-  }
-  else { // ready for next note
-    Stoccato2Index++;
-    if(Stoccato2Index > MAX_STOCCATO2_INDEX){
-      Stoccato2Index = 0;
-    }
-    SetTimer1A(Stoccato2[Stoccato2Index].cyclesPerStep);
-  }
-  Timer1A_Count++;
-}
-
-void Timer1B_Handler(void){
-  TIMER1_ICR_R = TIMER_ICR_TBTOCINT;// acknowledge Timer1B_Handler timeout
-  if(Stoccato1[Stoccato1Index].numberOfSteps > Timer1B_Count){ // not ready for next note, but increment step
-    Stoccato1_InstrumentIndex++;
-    if(Stoccato1_InstrumentIndex > MAX_INSTRUMENT_INDEX){
-      Stoccato1_InstrumentIndex = 0;
-    }
-  }
-  else { // ready for next note
-    Stoccato1Index++;
-    if(Stoccato1Index > MAX_STOCCATO1_INDEX){
-      Stoccato1Index = 0;
-    }
-    SetTimer1B(Stoccato1[Stoccato1Index].cyclesPerStep);
-  }
-  Timer1B_Count++;
-}
-
-void Timer2A_Handler(void){
-  TIMER2_ICR_R = TIMER_ICR_TATOCINT;// acknowledge Timer2A_Handler timeout
-  if(Melody[MelodyIndex].numberOfSteps > Timer2A_Count){ // not ready for next note, but increment step
-    Melody_InstrumentIndex++;
-    if(Melody_InstrumentIndex > MAX_INSTRUMENT_INDEX){
-      Melody_InstrumentIndex = 0;
-    }
-  }
-  else { // ready for next note
-    MelodyIndex++;
-    if(MelodyIndex > MAX_MELODY_INDEX){
-      MelodyIndex = 0;
-    }
-    SetTimer2A(Melody[MelodyIndex].cyclesPerStep);
-  }
-  Timer2A_Count++;
-}
-
-void Timer2B_Handler(void){
-  TIMER2_ICR_R = TIMER_ICR_TBTOCINT;// acknowledge Timer2B_Handler timeout
-  if(CounterMelody[CounterMelodyIndex].numberOfSteps > Timer2B_Count){ // not ready for next note, but increment step
-    CounterMelody_InstrumentIndex++;
-    if(CounterMelody_InstrumentIndex > MAX_INSTRUMENT_INDEX){
-      CounterMelody_InstrumentIndex = 0;
-    }
-  }
-  else { // ready for next note
-    CounterMelodyIndex++;
-    if(CounterMelodyIndex > MAX_COUNTERMELODY_INDEX){
-      CounterMelodyIndex = 0;
-    }
-    SetTimer2B(CounterMelody[CounterMelodyIndex].cyclesPerStep);
-  }
-  Timer2B_Count++;
-}
-
-void Timers_init(void){long sr;
-  sr = StartCritical(); 
-  SYSCTL_RCGCTIMER_R |= 0x07;   // 0) activate TIMER0-2
-  
-  TIMER0_CTL_R = 0x00000000;    // 1) disable TIMER0A during setup
-  TIMER0_CFG_R = 0x00000000;    // 2) configure for 32-bit mode
-  TIMER0_TAMR_R = 0x00000002;   // 3) configure for periodic mode, default down-count settings
-  TIMER0_TAPR_R = 0;            // 5) bus clock resolution
-  TIMER0_ICR_R = 0x00000001;    // 6) clear TIMER0A timeout flag
-  TIMER0_IMR_R = 0x00000001;    // 7) arm timeout interrupt
-  NVIC_PRI4_R = (NVIC_PRI4_R&0x00FFFFFF)|0x80000000; // 8) priority 4
-// interrupts enabled in the main program after all devices initialized
-// vector number 35, interrupt number 19
-  NVIC_EN0_R = 1<<19;           // 9) enable IRQ 19 in NVIC
-  TIMER0_CTL_R = 0x00000001;    // 10) enable TIMER0A
-  
-  TIMER0_CTL_R = 0x00000000;    // 1) disable TIMER0A during setup
-  TIMER0_CFG_R = 0x00000000;    // 2) configure for 32-bit mode
-  TIMER0_TBMR_R = 0x00000002;   // 3) configure for periodic mode, default down-count settings
-  TIMER0_TBPR_R = 0;            // 5) bus clock resolution
-  TIMER0_ICR_R = 0x00000001;    // 6) clear TIMER0A timeout flag
-  TIMER0_IMR_R = 0x00000001;    // 7) arm timeout interrupt
-  NVIC_PRI5_R = (NVIC_PRI5_R&0xFFFFFF00)|0x00000080; // 8) priority 4
-// interrupts enabled in the main program after all devices initialized
-// vector number 35, interrupt number 19
-  NVIC_EN0_R = 1<<20;           // 9) enable IRQ 19 in NVIC
-  TIMER0_CTL_R = 0x00000001;    // 10) enable TIMER0A
-  
-  TIMER1_CTL_R = 0x00000000;    // 1) disable TIMER1A during setup
-  TIMER1_CFG_R = 0x00000000;    // 2) configure for 32-bit mode
-  TIMER1_TAMR_R = 0x00000002;   // 3) configure for periodic mode, default down-count settings
-  TIMER1_TAPR_R = 0;            // 5) bus clock resolution
-  TIMER1_ICR_R = 0x00000001;    // 6) clear TIMER1A timeout flag
-  TIMER1_IMR_R = 0x00000001;    // 7) arm timeout interrupt
-  NVIC_PRI5_R = (NVIC_PRI5_R&0xFFFF00FF)|0x00008000; // 8) priority 4
-// interrupts enabled in the main program after all devices initialized
-// vector number 37, interrupt number 21
-  NVIC_EN0_R = 1<<21;           // 9) enable IRQ 21 in NVIC
-  TIMER1_CTL_R = 0x00000001;    // 10) enable TIMER1A  
-  
-  TIMER1_CTL_R = 0x00000000;    // 1) disable TIMER1A during setup
-  TIMER1_CFG_R = 0x00000000;    // 2) configure for 32-bit mode
-  TIMER1_TAMR_R = 0x00000002;   // 3) configure for periodic mode, default down-count settings
-  TIMER1_TAPR_R = 0;            // 5) bus clock resolution
-  TIMER1_ICR_R = 0x00000001;    // 6) clear TIMER1A timeout flag
-  TIMER1_IMR_R = 0x00000001;    // 7) arm timeout interrupt
-  NVIC_PRI5_R = (NVIC_PRI5_R&0xFF00FFFF)|0x00800000; // 8) priority 4
-// interrupts enabled in the main program after all devices initialized
-// vector number 37, interrupt number 21
-  NVIC_EN0_R = 1<<22;           // 9) enable IRQ 21 in NVIC
-  TIMER1_CTL_R = 0x00000001;    // 10) enable TIMER1A  
-  
-  TIMER2_CTL_R = 0x00000000;    // 1) disable timer2A during setup
-  TIMER2_CFG_R = 0x00000000;    // 2) configure for 32-bit mode
-  TIMER2_TAMR_R = 0x00000002;   // 3) configure for periodic mode, default down-count settings
-  TIMER2_TAPR_R = 0;            // 5) bus clock resolution
-  TIMER2_ICR_R = 0x00000001;    // 6) clear timer2A timeout flag
-  TIMER2_IMR_R = 0x00000001;    // 7) arm timeout interrupt
-  NVIC_PRI5_R = (NVIC_PRI5_R&0x00FFFFFF)|0x80000000; // 8) priority 4
-// interrupts enabled in the main program after all devices initialized
-// vector number 39, interrupt number 23
-  NVIC_EN0_R = 1<<23;           // 9) enable IRQ 23 in NVIC
-  TIMER2_CTL_R = 0x00000001;    // 10) enable timer2A
-  
-  TIMER2_CTL_R = 0x00000000;    // 1) disable timer2A during setup
-  TIMER2_CFG_R = 0x00000000;    // 2) configure for 32-bit mode
-  TIMER2_TAMR_R = 0x00000002;   // 3) configure for periodic mode, default down-count settings
-  TIMER2_TAPR_R = 0;            // 5) bus clock resolution
-  TIMER2_ICR_R = 0x00000001;    // 6) clear timer2A timeout flag
-  TIMER2_IMR_R = 0x00000001;    // 7) arm timeout interrupt
-  NVIC_PRI6_R = (NVIC_PRI6_R&0xFFFFFF00)|0x00000080; // 8) priority 4
-// interrupts enabled in the main program after all devices initialized
-// vector number 39, interrupt number 23
-  NVIC_EN0_R = 1<<24;           // 9) enable IRQ 23 in NVIC
-  TIMER2_CTL_R = 0x00000001;    // 10) enable timer2A
-  
-  EndCritical(sr);
-}
-
-void static SetTimer0A(uint32_t period){
-  TIMER0_TAILR_R = period-1;    // 4) reload value
-}
-
-void static SetTimer0B(uint32_t period){
-  TIMER0_TBILR_R = period-1;    // 4) reload value
-}
-
-void static SetTimer1A(uint32_t period){
-  TIMER1_TAILR_R = period-1;    // 4) reload value
-}
-
-void static SetTimer1B(uint32_t period){
-  TIMER1_TBILR_R = period-1;    // 4) reload value
-}
-
-void static SetTimer2A(uint32_t period){
-  TIMER2_TAILR_R = period-1;    // 4) reload value
-}
-
-void static SetTimer2B(uint32_t period){
-  TIMER2_TBILR_R = period-1;    // 4) reload value
-}

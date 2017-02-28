@@ -1,4 +1,4 @@
-// SysTick.h
+// SysTick.c
 // Runs on LM4F120/TM4C123
 // Provide functions that initialize the SysTick module, wait at least a
 // designated number of clock cycles, and wait approximately a multiple
@@ -13,8 +13,12 @@
 // Daniel Valvano
 // September 11, 2013
 
-/* This example accompanies the book
-   "Embedded Systems: Real Time Interfacing to Arm Cortex M Microcontrollers",
+/* This example accompanies the books
+   "Embedded Systems: Introduction to ARM Cortex M Microcontrollers",
+   ISBN: 978-1469998749, Jonathan Valvano, copyright (c) 2015
+   Volume 1, Program 4.7
+   
+   "Embedded Systems: Real Time Interfacing to ARM Cortex M Microcontrollers",
    ISBN: 978-1463590154, Jonathan Valvano, copyright (c) 2015
    Program 2.11, Section 2.6
 
@@ -29,9 +33,10 @@
  For more information about my classes, my research, and my books, see
  http://users.ece.utexas.edu/~valvano/
  */
+
 #include <stdint.h>
 #include "../inc/tm4c123gh6pm.h"
-
+#include "SysTick.h"
 #define NVIC_ST_CTRL_COUNT      0x00010000  // Count flag
 #define NVIC_ST_CTRL_CLK_SRC    0x00000004  // Clock Source
 #define NVIC_ST_CTRL_INTEN      0x00000002  // Interrupt enable
@@ -46,6 +51,11 @@ void SysTick_Init(void){
                                         // enable SysTick with core clock
   NVIC_ST_CTRL_R = NVIC_ST_CTRL_ENABLE+NVIC_ST_CTRL_CLK_SRC;
 }
+
+void SysTick_handler(void){
+  
+}
+
 // Time delay using busy wait.
 // The delay parameter is in units of the core clock. (units of 20 nsec for 50 MHz clock)
 void SysTick_Wait(uint32_t delay){
@@ -61,6 +71,6 @@ void SysTick_Wait(uint32_t delay){
 void SysTick_Wait10ms(uint32_t delay){
   uint32_t i;
   for(i=0; i<delay; i++){
-    SysTick_Wait(500000);  // wait 10ms (assumes 50 MHz clock)
+    SysTick_Wait(800000);  // wait 10ms (assumes 80 MHz clock)
   }
 }

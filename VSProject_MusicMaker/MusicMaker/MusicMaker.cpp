@@ -5,101 +5,209 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <assert.h>
 using namespace std;
 
 #define MAX_FILE_SIZE 100
+#define MAX_NUMBER_OF_FILES 20
+#define MAX_NUMBER_OF_NOTES 200
 
 struct musicInfo {
-	float freq;
+	string note;
 	float duration;
 	bool slur;
 };
 
-struct musicInfo musicArray[MAX_FILE_SIZE];
-int musicIndex = 0;
+struct musicfile {
+	struct musicInfo musicArray[MAX_FILE_SIZE];
+	int index;
+	int size;
+	string partname;
+};
 
+struct note {
+	string a_str;
+	float a_f;
+};
+
+struct Legend {
+	struct note notes[MAX_NUMBER_OF_NOTES], rests[MAX_NUMBER_OF_NOTES];
+	int numNotes, numRests;
+};
+
+enum {
+	newNote,
+	newRest,
+	exists
+};
+
+struct Legend MusicKey;
+struct musicfile files[MAX_NUMBER_OF_FILES];
+int filesIndex = 0;
+
+int waveRes, numFiles;
+float ftempo, fbus;
+
+void AddToMusicKey(int flag, string note, int duration);
+void MakeNoteKey(string* outputStr);
 float freqFinder(string str);
 
 int main()
 {
 	int debug;
-	int fbus, waveRes;
-	float ftempo;
-	string outputTitle;
+	string outputTitle, line;
 	cout << "Welcome to MusicMaker! I hope this works.\n";
 	cout << "Please ensure the file is formatted correctly.\n";
 	cout << "Because this really wont work if it's not.\n";
-	cout << "Name of file (in this directory): ";
-	string inputFileLocation;
-	cin >> inputFileLocation;
-	ifstream inputfile(inputFileLocation);
-	if (!inputfile.is_open()) {
-		cout << "Failed to open file :(\n";
-	}
-	else {
-		cout << "Success!\n";
-	}
-	cout << "Bus frequency:";
+	cout << "Processor Play frequency:";
 	cin >> fbus;
 	cout << "Resoultion of sound wave:";
 	cin >> waveRes;
 	cout << "Music Tempo:";
 	cin >> ftempo;
 	ftempo = ftempo / 60;
-	string line;
-	std::size_t found;
-	while (getline(inputfile, line)) {
-		found = line.find("{");
-		if (found != string::npos) {
-			getline(inputfile, line);
-			break;
-		}
-	}
-	char *line_c, *temp_c;
-	do {
-		line_c = new char[line.length() + 1];
-		std::strcpy(line_c, line.c_str());
-		temp_c = std::strtok(line_c, " ,");
-		musicArray[musicIndex].freq = freqFinder(string(temp_c));
-		temp_c = std::strtok(NULL, " ,");
-		musicArray[musicIndex].duration = stof(string(temp_c));
-		temp_c = std::strtok(NULL, " ,");
-		musicArray[musicIndex].slur = (bool)stoi(string(temp_c));
-		musicIndex++;
-		getline(inputfile, line);
-		found = line.find("}");
-	} while (found == string::npos);
-	inputfile.close();
-
-	cout << "Name of new file (no .txt):";
-	string outputFileName;
-	cin >> outputFileName;
-	string outputFileLocation = string(outputFileName);
-	outputFileLocation.append(".txt");
-	ofstream outputFile(outputFileLocation);
-	outputFile.clear();
-	outputFile << "const music " << outputFileName << "[] = {\n";
-	float a, b;
-	for (int i = 0; i < musicIndex; i++) {
-		if (musicArray[i].freq) {
-			a = fbus / (musicArray[i].freq * waveRes);
-			b = musicArray[i].freq * musicArray[i].duration * waveRes / ftempo;
+	cout << "Number of files to process:";
+	cin >> numFiles;
+	
+	// read and parse files
+	for (int k = 0; k < numFiles; k++) {
+		cout << "Name of file (no extension): ";
+		string inputFileName;
+		cin >> inputFileName;
+		ifstream inputfile(inputFileName);
+		if (!inputfile.is_open()) {
+			cout << "Failed to open file :(\n";
 		}
 		else {
-			a = musicArray[i].duration * fbus / ftempo;
-			b = 1;
+			cout << "Success!\n";
 		}
-		outputFile << "  { " << (int)a << ", " << (int)b << " },\n";
-		if (!musicArray[i].slur) {
-			a = (musicArray[i].duration * 0.9) * fbus / ftempo;
-			b = 1;
-			outputFile << "  { " << (int)a << ", " << (int)b << " },\n";
+		files[k].partname = inputFileName;
+		std::size_t found;
+		while (getline(inputfile, line)) {
+			found = line.find("{");
+			if (found != string::npos) {
+				getline(inputfile, line);
+				break;
+			}
 		}
+		char *line_c, *temp_c;
+		do {
+			line_c = new char[line.length() + 1];
+			std::strcpy(line_c, line.c_str());
+			temp_c = std::strtok(line_c, " ,");
+			files[k].musicArray[files[k].index].note = string(temp_c);
+			temp_c = std::strtok(NULL, " ,");
+			files[k].musicArray[files[k].index].duration = stof(string(temp_c));
+			temp_c = std::strtok(NULL, " ,");
+			files[k].musicArray[files[k].index].slur = (bool)stoi(string(temp_c));
+			files[k].index++;
+			getline(inputfile, line);
+			found = line.find("}");
+		} while (found == string::npos);
+		files[k].size = files[k].index;
+		inputfile.close();
 	}
-	outputFile << "};";
-	outputFile.close();
+
+	// make the new file
+	string tempLocation = "temp";
+	ofstream tempOutFile(tempLocation);
+	tempOutFile.clear();
+
+	// add the music parts
+	for (int k = 0; k < numFiles; k++) {
+		tempOutFile << "const music " << files[k].partname << "[] = {\n";
+		string a;
+		float b;
+		string rest;  int restCount = 0; float restDuration, noteValue;
+		for (int i = 0; i < files[k].size; i++) {
+			rest = string("rest");
+			float freq = freqFinder(files[k].musicArray[i].note);
+			if (freq) {
+				a = files[k].musicArray[i].note;
+				noteValue = fbus / (freq * waveRes);
+				AddToMusicKey(newNote, files[k].musicArray[i].note, noteValue);
+				b = freq * files[k].musicArray[i].duration * waveRes / ftempo;
+			}
+			else {
+				a = rest.append(to_string(restCount++));
+				restDuration = files[k].musicArray[i].duration;
+				AddToMusicKey(newRest, rest, restDuration);
+				b = 1;
+			}
+			tempOutFile << "  { " << a << ", " << (int)b << " },\n";
+			if (!files[k].musicArray[i].slur) {
+				a = rest.append(to_string(restCount++));
+				restDuration = (files[k].musicArray[i].duration * 0.9) * fbus / ftempo;
+				AddToMusicKey(newRest, rest, restDuration);
+				b = 1;
+				tempOutFile << "  { " << a << ", " << (int)b << " },\n";
+			}
+		}
+		tempOutFile << "};\n\n";
+	}
+
+	// output "a" key
+	tempOutFile.close();
+	cout << "Name of new file (with extension):";
+	string outputFileLocation;
+	cin >> outputFileLocation;
+	ofstream finalFile(outputFileLocation);
+	finalFile << "/****************************************\n";
+	finalFile << "     Begin Music Note Definitions\n";
+	finalFile << "****************************************/\n";
+	for (int i = 0; i < MusicKey.numNotes; i++) {
+		finalFile << "#define " << MusicKey.notes[i].a_str << "  " << (int)MusicKey.notes[i].a_f << '\n';
+	}
+	finalFile << '\n';
+	finalFile << "/****************************************\n";
+	finalFile << "     Begin Music Rest Definitions\n";
+	finalFile << "****************************************/\n";
+	for (int i = 0; i < MusicKey.numRests; i++) {
+		finalFile << "#define " << MusicKey.rests[i].a_str << "  " << (int)MusicKey.rests[i].a_f << '\n';
+	}
+	finalFile << '\n';
+	ifstream tempInFile(tempLocation);
+	while (getline(tempInFile, line)) {
+		finalFile << line << '\n';
+	}
+	tempInFile.close();
+	finalFile.close();
+	std::remove(tempLocation.c_str());
+
+
 	cout << "Safe to close this terminal";
 	cin >> debug;
+}
+
+void AddToMusicKey(int flag, string note, int value) {
+	float duration = value * fbus / ftempo;
+	for (int i = 0; i < MusicKey.numNotes; i++) {
+		if (MusicKey.notes[i].a_str == note) {
+			return;
+		}
+	}
+	for (int i = 0; i < MusicKey.numRests; i++) {
+		if ((MusicKey.rests[i].a_str == note) || (MusicKey.rests[i].a_f == duration)) {
+			return;
+		}
+	}
+	switch (flag) {
+	case newNote:
+		MusicKey.notes[MusicKey.numNotes].a_str = note;
+		MusicKey.notes[MusicKey.numNotes].a_f = value;
+		MusicKey.numNotes++;
+		break;
+	case newRest:
+		MusicKey.rests[MusicKey.numRests].a_str = note;
+		MusicKey.rests[MusicKey.numRests].a_f = duration;
+		MusicKey.numRests++;
+		break;
+	}
+	assert((MusicKey.numNotes < MAX_NUMBER_OF_NOTES) && (MusicKey.numRests < MAX_NUMBER_OF_NOTES));
+}
+
+void MakeNoteKey(string* outputStr) {
+
 }
 
 float freqFinder(string str) {

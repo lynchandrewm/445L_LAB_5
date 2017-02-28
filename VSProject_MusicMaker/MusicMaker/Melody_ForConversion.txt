@@ -1,9 +1,4 @@
-Begin MusicMaker Header 
-Title for output: Melody
-F_bus: 80000000
-Wave_res: 64
-F_tempo: 2
-End MusicMaker Header
+Melody_ForConversion.txt
 
 Format of this file?
 a, b, c
